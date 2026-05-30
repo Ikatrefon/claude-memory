@@ -22,5 +22,5 @@ Michał Duchowski, firma Assembly (agencja UX/design).
 - Zawsze `git status` przed pushem
 
 ## Komendy specjalne
-- "zapisz sesję" = zaktualizuj plik kontekstu projektu i wypchnij na GitHub
+- "zapisz sesję" = zaktualizuj pliki memory (lokalnie w `~/.claude/projects/.../memory/`) ORAZ wypchnij do `github.com/Ikatrefon/claude-memory` (`git push` z katalogu memory)
 - "wczytaj SETUP" = przeczytaj plik startowy na początku sesji
