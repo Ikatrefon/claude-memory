@@ -22,9 +22,9 @@ Interaktywna gra puzzle w obszarze banera Lindt (1440×400px) — user układa b
 `python3 -m http.server 8091` w katalogu PUZZLE (port 8091)
 
 ## GitHub / Deploy
-- Repo: jeszcze nie założone
-- Subdomena docelowa: `lds-lindt-puzzle.mdmresearch.com` (planowana)
-- Nie wdrożone na VPS
+- Repo: `github.com/Ikatrefon/lindt-puzzle`
+- Subdomena: `https://lds-lindt-puzzle.mdmresearch.com` — działa z SSL
+- VPS: kontener `lindt-puzzle` na porcie 8090, pliki w `/opt/lindt-puzzle/`
 
 ## Konfiguracja gry
 - Siatka: **5 kolumn × 3 wiersze = 15 kawałków**
@@ -91,11 +91,11 @@ W drag:
   gdzie `x` = CSS left kawałka podczas drag
 - Po snap: `pointer-events: none` na ułożonych kawałkach (inaczej blokują kliknięcia)
 
-## Stan na 2026-05-30
-- Gra działa lokalnie na porcie 8091
-- Wypustki pasują do siebie
-- Preview 3s + shuffle animacja zaimplementowane
-- Baner wyświetla się bez zniekształceń (cover scaling)
-- Nie wdrożone na VPS
+## Stan na 2026-05-31
+- Wdrożone na VPS: https://lds-lindt-puzzle.mdmresearch.com
+- Repo GitHub: github.com/Ikatrefon/lindt-puzzle
+- Strona prezentacyjna (index.html): mock strony Lindt (screenshot lindt.co.uk jako tło), baner od y=185 do y=585 (400px)
+- Gra w puzzlach: puzzle.html (standalone) + index.html (prezentacyjny)
+- Preview 5s → shuffle → gra → "Well Done" po 3s od ułożenia ostatniego kawałka
 - Brak cron joba do auto-odświeżania baneru
-- Brak CLAUDE.md i repo GitHub
+- Brak CLAUDE.md
