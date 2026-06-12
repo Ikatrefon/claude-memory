@@ -33,15 +33,40 @@ Gra desktopowa (NIE mobile) typu hidden-object w 3D FPP: slot machine (jednoręk
 Trzy komnaty: **Grand Hall** (czekoladowa fontanna, kominek + 2 bordowe fotele, 5 regałów, zegar dziadkowy, żyrandole), **Praline Parlour**, trzecia komnata.
 
 ## Model TurboSquid "Ancient Alchemy Laboratory" (ID 2558551)
-Kupiony/pobrany jako potencjalny setup: `ELEMENTS/3d/BLENDER ALCHEMY/bl.blend` (532 MB, Blender 5.1.2 zainstalowany w /Applications).
+Setup gry: `ELEMENTS/3d/BLENDER ALCHEMY/bl.blend` (532 MB, Blender 5.1.2 w /Applications).
 
-**Inspekcja (2026-06-12):** 35 meshy, 1,39 mln quadów (~2,8 mln tri), 129 materiałów, 78 obrazów WSZYSTKIE 4K/6K (~5,4 GB raw GPU — za dużo!), zero świateł/armatur/modyfikatorów, scena 9,4×7,2×5 m.
+**Inspekcja:** 35 meshy, 1,39 mln quadów (~2,8 mln tri), 129 materiałów, 78 obrazów 4K/6K (~5,4 GB raw GPU), zero świateł/armatur/modyfikatorów, scena 9,4×7,2×5 m. Nazwy obiektów = numery (artefakt importu USD).
 
-**Eksport testowy — SUKCES:** `ELEMENTS/3d/alchemy_test.glb` — **30 MB** (tekstury zmniejszone do 2K JPEG q75 + Draco level 6). Skrypt: `/tmp/export_alchemy_glb.py` (Blender headless `--background --python`). W GLB: 58 obrazów (deduplikacja), ~1,3 GB raw GPU — OK na desktop; w razie potrzeby KTX2 przez gltf-transform zbije do ~200–300 MB.
+## FINALNY PLIK DO GRY: `ELEMENTS/3d/alchemy_game.glb` (33 MB, stan 2026-06-12)
+- **2 164 obiekty: 2 129 ruchomych rekwizytów + 35 paczek tła `bg_*`**
+- Nazwy: `bottle_001`–499, `book_`405, `scroll_`640, `box_`122, `jug_`54, `jar_`124, `parchment_`285
+- **~95 FPS, 4 688 draw calls** (zmierzone Playwright + Chromium z GPU)
+- Tekstury 2K JPEG q75, geometria Draco lvl 6; ładowanie 0,4 s
+- Użycie w Three.js: `scene.getObjectByName('book_042')`, kategoria po prefiksie nazwy
+- Pełne rozbicie (28 344 obiektów) = 5 FPS — NIE robić; hybryda jest konieczna
 
-**Podgląd:** `alchemy-preview.html` (http://localhost:8097/alchemy-preview.html) — wymaga DRACOLoader (decoder z CDN three@0.160.0).
+## Pipeline klasyfikacji rekwizytów (powtarzalny!)
+1. `/tmp/cluster_alchemy.py` — split loose parts → klastry po sygnaturze (verts, bbox 2 dec., materiały) → render miniaturek Workbench (1 636 szt., ~20 min)
+2. `/tmp/make_sheets.py`, `/tmp/make_cat_sheets.py` — arkusze kontaktowe Pillow (czytelny font Monaco 20px!)
+3. Claude OGLĄDA arkusze (Read na PNG) i klasyfikuje → `/tmp/alchemy_classification.json`
+4. `/tmp/build_game_glb.py` — split → dopasowanie sygnatur → rename → join tła per paczka → eksport GLB
+- Sygnatury są deterministyczne między uruchomieniami — klasyfikacja JSON wystarczy do rebuilda (~5 min)
+- Detekcja butelek SZKLANYCH: materiał z Transmission > 0.1; ceramiczne/etykietowane trzeba wyłapać wizualnie!
+- Białe walce = ŚWIECE (nie zwoje) — płomienie to osobne billboardy w tle
+- W tle celowo: kapelusze czarownic, kule kryształowe, klepsydra, kociołki, miski, kosze, moździerze, szyldy
 
-**Pułapka:** materiały używają `KHR_materials_transmission` + `clearcoat` (szklane butelki) — transmission w Three.js robi dodatkowy przebieg renderu; jeśli FPS spadnie, zamienić na `transparent + opacity`.
+## Pułapki
+- Materiały `KHR_materials_transmission` + `clearcoat` (szkło) — drugi przebieg renderu w Three.js; przy spadku FPS zamienić na `transparent + opacity`
+- Klasyfikacja + skrypty zarchiwizowane w `ELEMENTS/3d/classification/` (kopie z /tmp; miniaturki `/tmp/alchemy_thumbs/` można odtworzyć skryptem `cluster_alchemy.py`)
+
+## Inne pliki w ELEMENTS/3d/
+- `alchemy_test.glb` (30 MB) — scalona wersja 35 obiektów (porównawcza)
+- `gold_bunny.glb` (9,3 MB) — Lindt Gold Bunny ze Sketchfab (CC-BY-4.0, autor dancao — kredyt w `gold_bunny_license.txt` WYMAGANY przy publikacji!). Znormalizowany: 25 cm wysokości, origin na środku podstawy. 154k tri — przy wielu kopiach zrobić decymację. Źródło: `PIN BALL/bunny_model/`
+- `alchemy_split.glb` (67 MB) — pełne rozbicie, tylko do inspekcji (5 FPS)
+
+## Podgląd / narzędzia
+- `alchemy-preview.html` — viewer z DRACOLoader: `?glb=plik.glb`, klik = inspekcja obiektu, H/U = ukryj/pokaż, strzałki = chodzenie (Shift = bieg), licznik FPS i draw calls
+- Test wydajności: `/tmp/test_split_fps.mjs` (Playwright 1.59 zainstalowany w /tmp, pasuje do chromium-1217 w cache)
 
 ## Następny krok (otwarty)
-Michał ocenia jakość 2K w podglądzie; jeśli OK — wpiąć scenę alchemy do zamku w index.html.
+Wpiąć scenę alchemy_game.glb do zamku w index.html; "czekoladowość" — tintowanie/podmiana tekstur materiałów (Michał miał wynotować obiekty do zmiany z podglądu).
