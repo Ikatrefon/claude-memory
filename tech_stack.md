@@ -16,13 +16,19 @@ metadata:
 - `serverExternalPackages`: Prisma i pg muszą być w tej liście
 - Zawsze czytaj `node_modules/next/dist/docs/` przed pisaniem kodu
 
-## Prisma 7
+## Prisma 7 (UWAGA — pułapki)
 - Output: `output = "../src/generated/prisma"` w schema
 - Import: `import { PrismaClient } from "@/generated/prisma/client"` (nie ma index.ts)
 - Wygenerowane pliki commitowane do repo
-- build script: `"build": "prisma generate && next build"`
-- start script: `"start": "prisma migrate deploy && next start"`
-- Po zmianie schema: `npx prisma generate` lokalnie + commit
+- **Prisma 7 wymaga adaptera nawet dla SQLite** — jeśli nie potrzebujesz Accelerate/Edge, użyj Prismy 5!
+
+## Prisma 5 (dla prostych projektów z SQLite)
+- Import: `import { PrismaClient } from '@prisma/client'` (klasycznie)
+- schema.prisma: `url = env("DATABASE_URL")` działa normalnie
+- binaryTargets dla Alpine Docker: `["native", "linux-musl-openssl-3.0.x"]`
+- `apk add --no-cache openssl` w obu stagach Dockerfile (builder + runner)
+- **Kolejność w Dockerfile:** `COPY prisma ./prisma` PRZED `RUN npm ci` (postinstall odpala prisma generate!)
+- entrypoint.sh: `node ./node_modules/prisma/build/index.js migrate deploy` zamiast `npx prisma` (npx ściąga Prismę 7!)
 
 ## PostgreSQL 16
 - Standalone Docker container z named volume

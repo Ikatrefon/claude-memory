@@ -92,8 +92,8 @@ W drag:
 - Po snap: `pointer-events: none` na ułożonych kawałkach (inaczej blokują kliknięcia)
 
 ## Stan na 2026-05-31
-- Wdrożone na VPS: https://lds-lindt-puzzle.mdmresearch.com
-- Repo GitHub: github.com/Ikatrefon/lindt-puzzle
+- Wdrożone na VPS: https://lds-lindt-puzzle.mdmresearch.com ✅
+- Repo GitHub: github.com/Ikatrefon/lindt-puzzle ✅
 - Strona prezentacyjna (index.html): mock strony Lindt (screenshot lindt.co.uk jako tło), baner od y=185 do y=585 (400px)
 - Gra w puzzlach: puzzle.html (standalone) + index.html (prezentacyjny)
 - Preview 5s → shuffle → gra → "Well Done" po 3s od ułożenia ostatniego kawałka

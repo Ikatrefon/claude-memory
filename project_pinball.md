@@ -182,9 +182,10 @@ const gZ = GRAVITY * (Math.sin(tiltX - BASE_TILT_X));
 6. Deploy maze.html na VPS
 
 ## Deploy
-- VPS: `http://195.35.56.37:8088/game.html` (wersja Breakout, nie maze)
-- maze.html: lokalnie `http://localhost:8080/maze.html`
-- maze.html nie jest jeszcze wdrożone
+- Subdomena maze3d: `https://lds-lindt-maze3d.mdmresearch.com` ✅ (SSL, wdrożone 2026-06-01)
+- VPS: kontener `pinball-demo` na porcie 8088, pliki w `/opt/pinball-demo/`
+- Index: `index.html` = kopia `maze.html`
+- GitHub: `github.com/Ikatrefon/pin_ball` (razem z game.html w jednym repo) ✅
 
 ## Historia debugowania kolizji (skrót)
 1. Ball sinks → per-cell floorY
