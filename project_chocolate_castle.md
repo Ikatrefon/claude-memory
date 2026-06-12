@@ -64,9 +64,21 @@ Setup gry: `ELEMENTS/3d/BLENDER ALCHEMY/bl.blend` (532 MB, Blender 5.1.2 w /Appl
 - `gold_bunny.glb` (9,3 MB) — Lindt Gold Bunny ze Sketchfab (CC-BY-4.0, autor dancao — kredyt w `gold_bunny_license.txt` WYMAGANY przy publikacji!). Znormalizowany: 25 cm wysokości, origin na środku podstawy. 154k tri — przy wielu kopiach zrobić decymację. Źródło: `PIN BALL/bunny_model/`
 - `alchemy_split.glb` (67 MB) — pełne rozbicie, tylko do inspekcji (5 FPS)
 
+## Tryb czekoladowy — `chocolate-preview.html` (stan 2026-06-12 wieczór)
+Cała "czekoladowość" to warstwa w viewerze Three.js — GLB nietknięty, przycisk CHOCOLATE ON/OFF przywraca oryginał w locie (zapisane mapy/kolory materiałów w Map).
+- **Tekstury Michała**: `ELEMENTS/TEXTURES/` — wersje 2K zrobione sips-em: `choco_stone.jpg` (karmel→podłoga), `choco_wall.jpg` (mleczna→ściany), `choco_solid.jpg` (gorzka→sufit)
+- **Auto-wykrywanie powierzchni**: pole powierzchni + średnia normala per materiał (próbkowanie trójkątów); podłoga ny>0.55 nisko, sufit ny<-0.35 wysoko, ściany |ny|<0.35, tylko materiały area>3 m²; tekstury przez oryginalne UV atlasu (flipY=false!) — działa, bo texel density w atlasie jednolita
+- **Światło**: ambient 0.8 + hemi 0.5 (mało wypełnienia = wyraźne cienie), 4 świece-PointLight migoczące sumą 3 sinusów — 2 z cieniami (base 26, mapy 1024) + 2 dopełniające (base 11), fioletowy "magic" point 8±2.5 pod sufitem, FogExp2 0.02, exposure 1.15
+- **Płomienie**: detekcja = materiał transparent + dominujący pomarańcz w teksturze (canvas 16×16, avg kolor); emissive 0xffa030 ×2.2 + sprite'y halo (radialny gradient na canvasie, additive, pulsujące) na pozycjach z klastrowania wierzchołków (30 cm)
+- **Pył magiczny**: 350 miękkich drobinek (dotTexture gradient) w 3 rozmiarach, additive, dryf + mryganie warstw
+- **PUŁAPKA: UnrealBloomPass + KHR_transmission = czarny ekran** — bloom odpada przy tym modelu; glow robić sprite'ami + emissive
+- Debug: `window.__sprites`, `__cam`, `__setChoco(bool)`; zrzuty iteracyjne: `/tmp/shot_choco.mjs` (Playwright)
+- FPS: ~66 szeroki kadr / ~102 blisko
+- Ewentualny tuning: cienie na pozostałych 2 świecach (-10/15 FPS), fioletowe ogniki zamiast pomarańczowych
+
 ## Podgląd / narzędzia
 - `alchemy-preview.html` — viewer z DRACOLoader: `?glb=plik.glb`, klik = inspekcja obiektu, H/U = ukryj/pokaż, strzałki = chodzenie (Shift = bieg), licznik FPS i draw calls
 - Test wydajności: `/tmp/test_split_fps.mjs` (Playwright 1.59 zainstalowany w /tmp, pasuje do chromium-1217 w cache)
 
 ## Następny krok (otwarty)
-Wpiąć scenę alchemy_game.glb do zamku w index.html; "czekoladowość" — tintowanie/podmiana tekstur materiałów (Michał miał wynotować obiekty do zmiany z podglądu).
+Wpiąć scenę alchemy_game.glb do zamku w index.html, przenosząc tam warstwę czekoladową z chocolate-preview.html (tekstury+światło+płomienie+pył). Michał zaakceptował klimat trybu czekoladowego.
