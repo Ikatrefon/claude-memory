@@ -82,3 +82,40 @@ Cała "czekoladowość" to warstwa w viewerze Three.js — GLB nietknięty, przy
 
 ## Następny krok (otwarty)
 Wpiąć scenę alchemy_game.glb do zamku w index.html, przenosząc tam warstwę czekoladową z chocolate-preview.html (tekstury+światło+płomienie+pył). Michał zaakceptował klimat trybu czekoladowego.
+
+---
+
+## Stan po sesji 2026-06-16 (FPP + kolizje w chocolate-preview.html)
+
+### Plik roboczy
+**Pracujemy teraz w `chocolate-preview.html`**, NIE w index.html (index.html = stara wersja, odłożona, ewentualne elementy do wyciągnięcia później). Decyzja Michała.
+
+### Geometria modelu alchemy_game.glb — POPRAWKI do wcześniejszych zapisów
+- To **jeden budynek (gabinet alchemika)**, NIE „trzy komnaty Grand Hall/Parlour" — tamto było planem `ROOMS` w index.html, nie tym GLB.
+- **DWA poziomy** połączone drewnianymi **schodami**. Parter (podłoga Y≈0) + antresola/piętro (podłoga ~2,3–2,4 m). Schody i wszystkie ściany są wtopione w jeden mesh-skorupę.
+- Schody (three.js): podstawa x≈−1,1, z≈0,3 (pas z three ≈ −0,5…+1,0), wznoszą się wzdłuż −X do podestu x≈−3,4 na wysokości ~2,4 m. Stopień ~0,18 m.
+- Wymiary sceny: X[−5,2; 4,2] · Y(wys.)[0; 4,9] · Z[−3,3; 3,9]. Fasada z drzwiami/oknami na z≈+3,9. Antresola przy fasadzie ma podłogę ~2,3 m i wolne ~2,3 m nad głową.
+- **Mapowanie Blender→three.js**: three.x = Blender.x · three.y = Blender.z (wysokość) · three.z = −Blender.y. (GLTFLoader trzyma glTF Y-up; Blender konwertuje na Z-up.)
+
+### KRYTYCZNE: jak budować collider z paczek bg_
+Paczki `bg_<numer>` w GLB to **GRUPY** (puste węzły). Geometria siedzi w meshach-DZIECIACH o nazwach BEZ prefiksu, rozbitych per materiał (`<numer>`, `<numer>_1`, `_2`…). Filtr `mesh.name.startsWith('bg_')` łapie tylko ~5 meshy = 51 tys. tri → ściany i schody NIE kolidują (gracz przez nie przechodzi).
+**Poprawnie:** mesh jest architekturą, gdy on LUB którykolwiek **przodek** ma nazwę `bg_*`. Wtedy collider = 105+ meshy ≈ **1,92 mln tri** (pełne ściany, schody, meble). Rekwizyty (bottle_/book_/scroll_/jar_/box_/jug_/parchment_) pomijamy, żeby gracz nie zacinał się na drobiazgach.
+
+### System gracza/kolizji (three-mesh-bvh 0.7.6)
+- Kapsuła vs BVH (shapecast + closestPointToSegment), 5 podkroków/klatkę, grawitacja −28.
+- `PLAYER`: radius **0,22** (mały — wchodzi w zakamarki), eye stojąc 1,50 m (segLen 1,28), kucając 0,84 m (segLen 0,62). pos.y = czubek kapsuły = oczy.
+- Kucanie: przy zmianie stanu przesuwamy pos.y o ±(STAND_SEG−CROUCH_SEG), żeby STOPY zostały na podłodze a oczy się obniżyły (inaczej kucanie podnosi stopy, oczy bez zmian — błąd, który naprawiliśmy).
+- Skok JUMP=7 (edge-trigger, tylko onGround). WALK 2,6 / RUN 5,2 (Shift), kucając ×0,5.
+- Sterowanie: **PointerLockControls** (klik = wejście). WASD + strzałki ruch · mysz · Shift bieg · **LewyCtrl kucanie** · **Spacja skok** · **C** podgląd colliderów · **R** respawn.
+- Start: na antresoli przy fasadzie/drzwiach, tyłem do nich, twarzą w głąb. `SPAWN=(−3.5, 4.0, 3.3)`, `SPAWN_YAW=0` (yaw 0 = patrzy w −Z). Stałe `SPAWN`/`SPAWN_YAW` na górze skryptu = łatwa zmiana.
+
+### Debug/narzędzia (z tej sesji)
+- `window.__player`, `window.__collider`, `window.__cam`, `window.__setChoco(bool)`, `window.__fps`.
+- Podgląd colliderów: zielona x-ray powłoka (MeshBasicMaterial, depthTest:false, opacity 0,16), toggle **C**.
+- Inspekcja modelu w Blenderze headless: `/tmp/inspect_castle.py`, `/tmp/find_stairs.py`, rendery przekrojów (top-cut przez clip kamery ORTHO). Skorupa = mesh zawierający `222227378305`.
+- Testy Playwright (chromium w /tmp): chodzenie, schody, kolizje, mechanika (kucanie/skok/strzałki), mapy podłóg przez raycast na `window.__collider`.
+
+### Otwarte / do potwierdzenia przez Michała
+- Czy `SPAWN` jest dokładnie przy właściwych drzwiach (pozycja wywnioskowana z renderów).
+- Strojenie: prędkość kucania/skoku, ew. blokada „wspinania się" kapsuły na niskie meble (teraz wchodzi na nie jak na schody).
+- FPS z podglądem colliderów ON ~48–51 (collider 1,9 mln tri) — do normalnej gry C wyłącza podgląd.
