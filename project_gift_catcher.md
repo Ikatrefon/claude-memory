@@ -25,7 +25,7 @@ metadata:
 - Telefon przechylasz → koszyk się porusza (gamma z DeviceOrientation API), touch fallback
 - Spadające przedmioty: 7 wariantów LINDOR, niedźwiedź, królik, 3 pudełka (ważone losowanie)
 - 3 życia, missed item = -1 życie
-- Czas: 45 sekund, timer jako pasek postępu
+- Czas: **20 sekund** (stała `GAME_TIME`); licznik liczbowy w HUD obok wyniku z etykietą „sec" (pasek postępu USUNIĘTY — był `#timer-bar`)
 - Score → zniżka: 0-49=5%, 50-149=10%, 150-299=15%, 300+=20%
 - Kody: LINDT5XMAS / LINDT10XMAS / LINDT15XMAS / LINDT20XMAS
 - Wake Lock API (ekran nie gaśnie podczas gry)
@@ -73,3 +73,36 @@ Carol of the Bells — Web Audio API: triangle wave + sub-octave sine + shimmer 
 - `sed -i` na VPS tworzy nowy inode → Docker bind mount widzi stary plik → używać `docker restart`
 - Build zawsze natywnie na VPS (Mac=arm64, VPS=amd64)
 - Basket.png ma alfa ~255 wszędzie — rysuj koszyk PRZED przedmiotami w środku (nie po)
+
+---
+
+## Stan po sesji 2026-06-16 (tuning rozgrywki + faktyczny deploy + cache)
+
+### Zmiany rozgrywki (wdrożone, commit 09a7e6c)
+- **Czas gry 20 s** (`GAME_TIME = 20`). Wcześniej 45 s.
+- HUD: zamiast paska czasu — **licznik liczbowy obok wyniku**: `Time` + `#time-val` + `<span class="unit">sec</span>`. Przy ≤5 s `#time-display` dostaje klasę `.low` (czerwony).
+- Prędkość spadania: `vy` mnożone **×1.21** (dwa kroki po +10%). Wzór: `(1.3 + rand*1.2 + (GAME_TIME - timeLeft)*0.018) * 1.21`.
+- Więcej produktów: `spawnInterval` start **950 ms**, dolny limit **430 ms** (było 1500/700). Im dłużej, tym gęściej (−12 ms/spawn).
+- Progi zniżek bez zmian (0-49=5%, 50-149=10%, 150-299=15%, 300+=20%).
+- Uwaga: szybciej+gęściej = trudniej przy 3 życiach; ew. do wyważenia.
+
+### FAKTYCZNY mechanizm deployu (WAŻNE — sprostowanie do „bind mount")
+- Kontener `lindt-gift-catcher` działa z **OBRAZU** `lindt-gift-catcher:latest` — **BEZ bind-mountu** (`docker inspect ... .Mounts` = []). Restart policy `unless-stopped`, sieć `bridge`, port **8094:80**.
+- Domenę obsługuje **systemowy nginx** (NIE dockerowy workload_nginx): `/etc/nginx/sites-available/lindt-gift-catcher`, `proxy_pass http://localhost:8094`, listen 80+443 (SSL).
+- Katalog budowania na VPS: **`/tmp/lindt-gift-catcher/`** (UWAGA: /tmp — ulotny po reboocie; wtedy odtworzyć z repo). Zawiera Dockerfile, default.conf, index.html, ELEMENTY/.
+- **Procedura deployu (sprawdzona):**
+  1. lokalnie: `git add … && commit && git push` (repo `Ikatrefon/lds-lindt-gift-catcher`)
+  2. `scp -i ~/.ssh/id_ed25519 <pliki> root@195.35.56.37:/tmp/lindt-gift-catcher/`
+  3. na VPS: `cd /tmp/lindt-gift-catcher && docker build -t lindt-gift-catcher:latest .`
+  4. `docker stop lindt-gift-catcher && docker rm lindt-gift-catcher && docker run -d --name lindt-gift-catcher --restart unless-stopped -p 8094:80 lindt-gift-catcher:latest`
+  5. weryfikacja: `curl -sI https://lds-lindt-gift-catcher.mdmresearch.com/index.html`
+
+### Cache (fix: telefony pokazywały starą wersję)
+- Domyślny nginx nie dawał `Cache-Control` → telefony cache'owały stary `index.html`.
+- Dodany **`default.conf`** kopiowany w Dockerfile do `/etc/nginx/conf.d/default.conf`: dla `= /index.html` ustawia `Cache-Control: no-cache, no-store, must-revalidate` + `Pragma no-cache` + `expires -1`.
+- Dzięki temu każdy kolejny deploy jest od razu widoczny pod tym samym QR — bez zmiany kodu QR.
+
+### QR i zasoby
+- **`ELEMENTY/background.png` brakowało w git** — dodane do repo (live i tak je miało z `/tmp`).
+- `qr-gift-catcher.png` koduje **`https://lds-lindt-gift-catcher.mdmresearch.com/?v=2`** (`?v=2` = cache-bust dla już-zacache'owanych telefonów). Generacja: `python3` + `qrcode` (ERROR_CORRECT_H, box_size 16). Dekodowanie do weryfikacji: `opencv-python-headless` (`cv2.QRCodeDetector`).
+- Test mobilny: ten sam QR zawsze prowadzi do aktualnie wdrożonej wersji.
