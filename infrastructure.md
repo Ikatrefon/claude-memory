@@ -37,3 +37,13 @@ Mac → git push → GitHub (Ikatrefon) → Dokploy → Nixpacks → Docker imag
 ## Aktywne domeny
 - auditor.mdmresearch.com → UX Auditor
 - lds-lindt-webcam.mdmresearch.com → Lindt LiveCam widget (port 8089)
+
+## Publiczny proxy — REALIA (sprostowanie, ustalone 2026-06-18)
+- Ruch 80/443 obsługuje **dokeryzowany `workload_nginx`** (kontener), NIE systemowy nginx (systemd nginx jest NIEAKTYWNY — edycja `/etc/nginx/sites-*` nic nie daje).
+- Config bind-mount: host `/opt/workload-estimator/workload-estimator/nginx/nginx.conf` → kontener `/etc/nginx/nginx.conf`. Certy: host `.../nginx/certs/` → `/etc/nginx/certs/`.
+- Każda gra/domena = blok `server { listen 443 ssl; server_name X; location / { proxy_pass http://195.35.56.37:PORT; } }` (proxy do hosta po IP:port, bo nginx jest w kontenerze — NIE `localhost`).
+- Przeładowanie: `docker exec workload_nginx nginx -t && docker exec workload_nginx nginx -s reload`.
+- **Nowa domena wymaga:** rekord DNS A (Michał w Hostingerze — **BRAK wildcard**, losowa subdomena się nie rozwiązuje) + cert (certbot) + blok server w nginx.conf + kontener na nowym porcie.
+- **Firewall (ufw aktywny):** publicznie tylko 22/80/443. Surowy `IP:port` z zewnątrz NIE przejdzie — wszystko musi iść przez workload_nginx.
+- Porty zajęte (przykł.): 8088 pinball, 8089 webcam, 8094 gift-catcher, 8095 arkanoid3d, 8101 pickmix.
+- Gry NIE mają restart-policy spójnie (część `unless-stopped`, część `no`) → po reboocie VPS część kontenerów nie wstaje sama; build dir bywa w `/tmp` (ulotny).
