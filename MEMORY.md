@@ -1,5 +1,6 @@
 # Memory Index
 
+- [Zasady startowe (anty-barok)](CLAUDE-zasady-startowe.md) — KONTRAKT: najmniejszy kod niosący funkcję, non-goals, YAGNI/reguła trzech, trim-pass, knip/eslint, nazywaj dryf. Stosuj domyślnie.
 - [User Profile](user_profile.md) — Michał Duchowski, Assembly, styl współpracy, komendy specjalne
 - [Infrastructure](infrastructure.md) — Mac + VPS Hostinger + schemat deploymentu + Docker/Dokploy
 - [Tech Stack](tech_stack.md) — Next.js 16, Prisma 7, Tailwind 4, Playwright, Anthropic API (z pułapkami)
