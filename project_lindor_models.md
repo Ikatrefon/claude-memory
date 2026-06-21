@@ -11,7 +11,10 @@ metadata:
 
 ## Lokalizacja
 `/Users/michal/CLAUDE PROJECTS/3d/MODELS/LINDORKI/`
-- 4 GLB: `lindor-czerwony.glb`, `lindor-czarny.glb`, `lindor-brazowy.glb`, `lindor-zolty.glb` (game-ready, ~1.1–1.6 MB)
+- **12 GLB (2026-06-21):** czerwony, czarny, brazowy, zolty + jasny_braz, mientowy, niebieskawy, niebieski-ciemny, rozowy-ciemy, rozowy, zielony, zielony_ciemny (game-ready 1024 tex, ~1.0–1.6 MB). Michał dorzucił 8 nowych skanów folii do TEKSTURY/ (wszystkie 1575×950), ja przepuściłem przez pipeline.
+- **bbox logo per skan (do make_tex.py, logo=owal, patch=pas wzoru nad logami `[250,20,1150,240]`):** jasny_braz `[515,290,955,625]`, mientowy `[950,260,1460,610]`, niebieskawy `[535,285,960,620]`, niebieski-ciemny `[945,275,1435,575]`, rozowy-ciemy `[955,260,1435,580]`, rozowy `[720,295,1210,620]`, zielony `[920,255,1450,605]`, zielony_ciemny `[720,290,1210,620]`. Oryginały: czerwony `[838,278,1332,616]`/patch`[300,10,1100,250]`, czarny `[890,265,1450,625]`/`[300,20,1100,250]`, brazowy `[555,270,1085,620]`/`[250,15,1050,200]`, zolty `[660,270,1255,620]`/`[250,10,1100,130]`. Rotacja kuli Z=248° dla wszystkich.
+- **Skrypty (przetrwały w /tmp):** `/tmp/make_tex.py` (PIL: equirect 1024×512 + normal), `/tmp/build_lindor.py` (Blender headless, args: color_tex normal_tex out_glb render_prefix rot_deg), `/tmp/sweep_lindor.py` (szukanie kąta). Blender: `/Applications/Blender.app/Contents/MacOS/Blender -b -P build_lindor.py -- ...`.
+- 4 stare GLB: `lindor-czerwony.glb`, `lindor-czarny.glb`, `lindor-brazowy.glb`, `lindor-zolty.glb`
 - `TEKSTURY/` — płaskie skany folii (1575×950 JPG): Lindor-czerwony/czarny/brazowy/zolty
 - `TEKSTURY/REFERENCJE/` — zdjęcia produktowe
 - `PODGLAD/` — rendery + kopie GLB
