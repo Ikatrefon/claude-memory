@@ -23,7 +23,8 @@ metadata:
 
 ## Mechanika gry
 - Telefon przechylasz → koszyk się porusza (gamma z DeviceOrientation API), touch fallback
-- Spadające przedmioty: 7 wariantów LINDOR, niedźwiedź, królik, 3 pudełka (ważone losowanie)
+- Spadające przedmioty: **TYLKO pralinki LINDOR — 12 wariantów** (Lindo-a..g + 5 packshotów: MILK, Extra Dark, MILK HAZELNUT, MILK SEASALT CARAMEL, MILK STRAWBERRY CREAM). Misie/króliki/pudełka USUNIĘTE (2026-06-22). Wszystkie pts:5, równa waga. Packshoty 150×~420 (ratio ~2.8, folia z ogonkami), nazwy ze spacjami działają w `img.src` bez encode.
+- Spadające pralinki **kołyszą się lewo-prawo** (±~13°, `Math.sin(item.t*swayFr+swayPh)*0.22`, rysowane przez ctx.save/translate/rotate/restore) — efekt „powietrza".
 - 3 życia, missed item = -1 życie
 - Czas: **20 sekund** (stała `GAME_TIME`); licznik liczbowy w HUD obok wyniku z etykietą „sec" (pasek postępu USUNIĘTY — był `#timer-bar`)
 - Score → zniżka: 0-49=5%, 50-149=10%, 150-299=15%, 300+=20%
@@ -81,7 +82,7 @@ Carol of the Bells — Web Audio API: triangle wave + sub-octave sine + shimmer 
 ### Zmiany rozgrywki (wdrożone, commit 09a7e6c)
 - **Czas gry 20 s** (`GAME_TIME = 20`). Wcześniej 45 s.
 - HUD: zamiast paska czasu — **licznik liczbowy obok wyniku**: `Time` + `#time-val` + `<span class="unit">sec</span>`. Przy ≤5 s `#time-display` dostaje klasę `.low` (czerwony).
-- Prędkość spadania: `vy` mnożone **×1.21** (dwa kroki po +10%). Wzór: `(1.3 + rand*1.2 + (GAME_TIME - timeLeft)*0.018) * 1.21`.
+- Prędkość spadania: `vy` mnożone **×1.38** (2026-06-22; było ×1.21). Wzór: `(1.3 + rand*1.2 + (GAME_TIME - timeLeft)*0.018) * 1.38`.
 - Więcej produktów: `spawnInterval` start **950 ms**, dolny limit **430 ms** (było 1500/700). Im dłużej, tym gęściej (−12 ms/spawn).
 - Progi zniżek bez zmian (0-49=5%, 50-149=10%, 150-299=15%, 300+=20%).
 - Uwaga: szybciej+gęściej = trudniej przy 3 życiach; ew. do wyważenia.
