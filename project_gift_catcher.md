@@ -35,6 +35,11 @@ metadata:
 - **Renifery białe** (`#f0f0f0`, było #5a2a08), Rudolf nadal czerwony nos.
 - **Trudniej:** prędkość `pralineSpeed()` = `1.1 + r³*6.5 + ramp` (mocno zróżnicowana: wolne i bardzo szybkie); rampa `el<12 ? el*0.06 : 0.72+(el-12)*0.24`. Gęstość spawnu time-based: `el<12 ? 1100-el*40 : 620-(el-12)*55` (min 220) — spokojnie do 12 s, potem bardzo gęsto.
 
+## Dodatki 2026-06-25 (countdown / outro / blur tła)
+- **Countdown 3-2-1** przed startem (jak ARKANOID3d): `startGame()` robi reset + `drawStaticFrame()` (taca+blik, tło ostre) + `runCountdown(beginPlay)`. Overlay `#countdown` (z-index 30), animacja `@keyframes cdPop`, beep na każdą cyfrę + „GO!". Dopiero `beginPlay()` ustawia gameRunning, timer, muzykę, gameLoop. Spawn dopiero po odliczaniu.
+- **Outro — wybuchy pozostałych pralinek:** `endGame()` → `runOutro()`: niewyłapane pralinki znikają po kolei (co 130 ms) `burstAt()` = kolorowe cząstki (reuse `FWParticle` rysowane na game-canvas, `outroParticles`), potem `showResult()`. Gdy brak pralinek → wynik od razu.
+- **PRÓBA: blur tła w grze** — tło przeniesione do osobnej warstwy `#game-bg` (z-index 0, `transform:scale(1.06)` overscan; `#game-container` ma już tylko kolor). W `gameLoop` krzywa: ostro→narasta do `BG_BLUR_MAX=5px` przez 12 s→ostatnie 2 s wraca do 0 (`playMs` akumuluje czas). **Flaga `const BG_BLUR_TRIAL = true` na górze skryptu — ustaw `false` = powrót do wersji pierwotnej (ostre tło), bez innych zmian.**
+
 ## Mechanika gry
 - Telefon przechylasz → koszyk się porusza (gamma z DeviceOrientation API), touch fallback
 - Spadające przedmioty: **TYLKO pralinki LINDOR — 12 wariantów** (Lindo-a..g + 5 packshotów: MILK, Extra Dark, MILK HAZELNUT, MILK SEASALT CARAMEL, MILK STRAWBERRY CREAM). Misie/króliki/pudełka USUNIĘTE (2026-06-22). Wszystkie pts:5, równa waga. Packshoty 150×~420 (ratio ~2.8, folia z ogonkami), nazwy ze spacjami działają w `img.src` bez encode.
