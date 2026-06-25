@@ -22,7 +22,8 @@ metadata:
 **How to apply:** mobile-only (DeviceOrientation tilt + touch fallback), font Marcellus.
 
 ## Stan 2026-06-25 (rebrand czerwony + trudniejsza rozgrywka)
-- **Tło:** `ELEMENTY/background-red.jpg` (1290×2796, czerwone Lindt LINDOR), `center/cover`. Ma **biały blik na ~0.794 wysokości** — koszyk siada na nim: `blikScreenY()` liczy pozycję z matematyki cover (BG_W/BG_H/BLIK_FRAC), `basket.y = min(blikScreenY()-basket.h*0.82, nad paskiem HUD)`.
+- **Tło:** `ELEMENTY/background-red.jpg` (1290×2796, czerwone Lindt LINDOR, CZYSTE — bez blika i bez czarnego paska), `center/cover`. (Backup wersji z wtopionym blikiem: `background-red_blik-backup.jpg`, nieużywany.)
+- **Blik:** osobna warstwa **rysowana w kodzie na canvasie** (`drawBlik()` — radialny gradient skalowany na elipsę), w pełni przesuwalny góra/dół jedną zmienną `BLIK_FRAC` (ułamek wysokości ekranu, domyślnie 0.80); szerokość/wysokość: `BLIK_WHALF`/`BLIK_HHALF`. Rysowany przed kulkami i koszykiem. Koszyk siada na nim: `basket.y = min(blikY()-basket.h+10, nad paskiem HUD)`. Decyzja: kodowany blik > PNG (ostry na każdym ekranie, przesuwalny, bez zależności od pliku).
 - **Koszyk:** nowy `ELEMENTY/koszyk.png` (czekoladowe pudełko z logo Lindt, 1975×1076) zamiast basket.png.
 - **HUD:** czarny pasek na dole (`HUD_H=92`), napisy w **złocie Lindt `#BB9750`** (zamiast #f5c842).
 - **Font Optima** (patrz [[feedback-lindt-font]] — wyjątek od Marcellus).
