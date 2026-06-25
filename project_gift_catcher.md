@@ -21,6 +21,17 @@ metadata:
 **Why:** gra mobilna Lindt do zbierania czekoladek — promocja ze zniżkami świątecznymi.
 **How to apply:** mobile-only (DeviceOrientation tilt + touch fallback), font Marcellus.
 
+## Stan 2026-06-25 (rebrand czerwony + trudniejsza rozgrywka)
+- **Tło:** `ELEMENTY/background-red.jpg` (1290×2796, czerwone Lindt LINDOR), `center/cover`. Ma **biały blik na ~0.794 wysokości** — koszyk siada na nim: `blikScreenY()` liczy pozycję z matematyki cover (BG_W/BG_H/BLIK_FRAC), `basket.y = min(blikScreenY()-basket.h*0.82, nad paskiem HUD)`.
+- **Koszyk:** nowy `ELEMENTY/koszyk.png` (czekoladowe pudełko z logo Lindt, 1975×1076) zamiast basket.png.
+- **HUD:** czarny pasek na dole (`HUD_H=92`), napisy w **złocie Lindt `#BB9750`** (zamiast #f5c842).
+- **Font Optima** (patrz [[feedback-lindt-font]] — wyjątek od Marcellus).
+- **Bez girlandy** (usunięta zielona z lampkami z góry).
+- **Śnieg:** generowany w JS, **90 płatków** (IIFE `makeSnow`), zamiast 28 statycznych divów.
+- **Fajerwerki częstsze:** burst 2–5 rakiet, co **2,5–6 s** (było 7–15 s).
+- **Renifery białe** (`#f0f0f0`, było #5a2a08), Rudolf nadal czerwony nos.
+- **Trudniej:** prędkość `pralineSpeed()` = `1.1 + r³*6.5 + ramp` (mocno zróżnicowana: wolne i bardzo szybkie); rampa `el<12 ? el*0.06 : 0.72+(el-12)*0.24`. Gęstość spawnu time-based: `el<12 ? 1100-el*40 : 620-(el-12)*55` (min 220) — spokojnie do 12 s, potem bardzo gęsto.
+
 ## Mechanika gry
 - Telefon przechylasz → koszyk się porusza (gamma z DeviceOrientation API), touch fallback
 - Spadające przedmioty: **TYLKO pralinki LINDOR — 12 wariantów** (Lindo-a..g + 5 packshotów: MILK, Extra Dark, MILK HAZELNUT, MILK SEASALT CARAMEL, MILK STRAWBERRY CREAM). Misie/króliki/pudełka USUNIĘTE (2026-06-22). Wszystkie pts:5, równa waga. Packshoty 150×~420 (ratio ~2.8, folia z ogonkami), nazwy ze spacjami działają w `img.src` bez encode.
