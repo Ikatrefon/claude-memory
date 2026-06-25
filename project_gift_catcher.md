@@ -22,6 +22,8 @@ metadata:
 **How to apply:** mobile-only (DeviceOrientation tilt + touch fallback), font Marcellus.
 
 ## Stan 2026-06-25 (rebrand czerwony + trudniejsza rozgrywka)
+- **Ekran startowy + końcowy:** tło `ELEMENTY/background-red-A.jpg` (czerwone ze śnieżynkami, 1290×2796). CTA (3 buttony) gradient poziomy `97702A→BB9750→97702A`.
+- **Karuzela pralinek (coverflow) na ekranie startowym** (zastąpiła `.floating-items`): 6 packshotów w `#carousel`, IIFE `carousel()`. Układ poziomy: front w środku (duży, ostry, blur 0), boki mniejsze, **tył mocno rozmyty (blur ~9px)** i wciśnięty do środka (`xr=Rx*(0.5+0.5*t)`), `-webkit-box-reflect` = odbicia pod spodem. Obrót **skokowy z pauzą**: `base += 2π/6` co **2600 ms**, przejście CSS 0.8s. Param: Rx=108, scale 0.4+t*0.95, blur `(1-t)^1.25*9`, z-index t*1000. Dopasowane 1:1 do referencji Michała.
 - **Tło:** `ELEMENTY/background-red.jpg` (1290×2796, czerwone Lindt LINDOR, CZYSTE — bez blika i bez czarnego paska), `center/cover`. (Backup wersji z wtopionym blikiem: `background-red_blik-backup.jpg`, nieużywany.)
 - **Blik:** osobna warstwa **rysowana w kodzie na canvasie** (`drawBlik()` — radialny gradient skalowany na elipsę), w pełni przesuwalny góra/dół jedną zmienną `BLIK_FRAC` (ułamek wysokości ekranu, domyślnie 0.80); szerokość/wysokość: `BLIK_WHALF`/`BLIK_HHALF`. Rysowany przed kulkami i koszykiem. Koszyk siada na nim: `basket.y = min(blikY()-basket.h+10, nad paskiem HUD)`. Decyzja: kodowany blik > PNG (ostry na każdym ekranie, przesuwalny, bez zależności od pliku).
 - **Koszyk:** nowy `ELEMENTY/koszyk.png` (czekoladowe pudełko z logo Lindt, 1975×1076) zamiast basket.png.
