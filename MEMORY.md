@@ -2,6 +2,7 @@
 
 - [Zasady startowe (anty-barok)](CLAUDE-zasady-startowe.md) — KONTRAKT: najmniejszy kod niosący funkcję, non-goals, YAGNI/reguła trzech, trim-pass, knip/eslint, nazywaj dryf. Stosuj domyślnie.
 - [User Profile](user_profile.md) — Michał Duchowski, Assembly, styl współpracy, komendy specjalne
+- [Project: JOB SEARCH](project_job_search.md) — automat dopasowujący CV pod ogłoszenia (UE), półautomat; szablon #1 = wierne odwzorowanie CV Michała (template/)
 - [Infrastructure](infrastructure.md) — Mac + VPS Hostinger + schemat deploymentu + Docker/Dokploy
 - [Tech Stack](tech_stack.md) — Next.js 16, Prisma 7, Tailwind 4, Playwright, Anthropic API (z pułapkami)
 - [Project: UX Auditor](project_ux_auditor.md) — status projektu, repo, lekcje
