@@ -39,5 +39,13 @@ Wierne odwzorowanie bazowego CV w `template/`:
 - PyMuPDF (`pip install pymupdf`) — render PDF→PNG, ekstrakcja obrazów/tekstu/coords (bez poppler).
 - Jinja2, Playwright (node w /tmp — bywa czyszczony, reinstall `npm i playwright`; chromium z cache executablePath chromium_headless_shell-1217).
 
-## Stan budowy
-Specyfikacja: etap 1 (MVP) = kanał ręczny→ocena→generacja(guardrail)→PDF z szablonu→poczekalnia. NIE zaczęty (poza szablonem #1). Następny krok: rozpisać/zbudować MVP silnika.
+## Silnik MVP — DZIAŁA (2026-06-27, etap 1 end-to-end)
+Aplikacja w `app/` (FastAPI). Przetestowana w trybie mock end-to-end (paste→ocena→auto-gen≥próg→guardrail→PDF→poczekalnia, akcje, edit, regenerate force, threshold).
+- **Uruchomienie:** `cd "JOB SEARCH" && export ANTHROPIC_API_KEY=... && app/.venv/bin/uvicorn app.main:app --reload --port 8200`. Bez klucza = **tryb MOCK** (offline, deterministyczny — `USE_MOCK` w config gdy brak klucza).
+- **venv:** `app/.venv` (fastapi, uvicorn, anthropic, jinja2, python-multipart, playwright+chromium). UWAGA: PyMuPDF/fitz jest w SYSTEMOWYM python3 (--user), NIE w venv — do rasteryzacji PDF użyj `python3`, nie venv.
+- **Pliki:** `app/config.py` (modele: eval=claude-haiku-4-5-20251001, gen=claude-sonnet-4-6; próg domyślny 60), `db.py` (SQLite: ogloszenia/cv_wygenerowane/konfiguracja), `engine.py` (evaluate+generate+guardrail; Anthropic z cache bazowego CV w bloku system; mock fallback), `pdf.py` (Playwright sync → template/template.html → A4 PDF), `main.py` (routes: / , /paste, /ad/{id}, /pdf/{id}, /ad/{id}/status|regenerate|edit, /config), `templates/` (Tailwind CDN, schludny UI).
+- **Guardrail (twardy):** wymusza name/contact/badge/education z bazy; doświadczenie tylko firmy z bazy (firma/rola/daty z bazy, brakujące dołącza), tech_skills ⊆ baza; flaguje bullety z <45% pokrycia słów z bazowymi (możliwe dopiski). Zwraca warnings[] pokazywane w detalu.
+- **Generacja** zwraca pełne cv (schemat jak cv.json) → renderowane tym samym szablonem #1. Mock: przestawia `itsme` wg pokrycia z ogłoszeniem + prefiks profilu.
+- Render PDF działa, dopasowane CV wygląda jak bazowe (potwierdzone). Podgląd w iframe pusty w chromium-headless-shell (brak wtyczki PDF) — w realnej przeglądarce OK; pobieranie PDF zwraca 200.
+- README.md w projekcie z instrukcją.
+- **NIE zrobione:** realne wywołania Claude nieprzetestowane na żywo (brak klucza w env Claude Code — Michał uruchamia z własnym kluczem). Etap 2 (Adzuna+cron), bogatsza edycja, mocniejszy guardrail (weryfikacja LLM), ew. WeasyPrint zamiast Chromium na VPS, deploy na VPS.
