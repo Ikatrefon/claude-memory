@@ -66,3 +66,5 @@ Działa publicznie (200, http→https, cert Let's Encrypt do 26.09.2026). Mobile
 - **Port 8110** dopisany do zajętych (patrz [[infrastructure]]).
 - **Procedura aktualizacji:** `rsync app template → /opt/jobsearch/` → `cd /opt/jobsearch && docker build -t jobsearch:latest .` (warstwy fonty/chromium/pip cache'owane → szybko) → `docker rm -f jobsearch && docker run -d ...` (jak wyżej).
 - **Fix wdrożeniowy:** starlette w obrazie wymaga `templates.TemplateResponse(request, name, context)` (stara sygnatura `(name,{...})` → „unhashable type: dict"). Naprawione.
+- **Klucz API zrotowany 2026-06-28** (Michał wymienił w `/opt/jobsearch/.env` + `docker restart jobsearch`), zweryfikowany na żywo (ocena działa). Stary (z czatu) skasowany.
+- **Basic Auth (2026-06-28):** strona za hasłem (login `michal`). Konfiguracja w bloku `job` nginx: `auth_basic` + `auth_basic_user_file /etc/nginx/certs/job/.htpasswd` (plik na host: `.../nginx/certs/job/.htpasswd`, format `user:apr1-hash`). Zmiana hasła: `printf 'michal:%s\n' "$(openssl passwd -apr1 'NOWE')" > .../nginx/certs/job/.htpasswd` → `docker exec workload_nginx nginx -s reload`.
