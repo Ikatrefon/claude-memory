@@ -9,6 +9,11 @@ metadata:
 
 # Projekt: JOB SEARCH (automat CV)
 
+## Repo / git (2026-06-28)
+- **GitHub:** `git@github.com:Ikatrefon/job-search.git` (PRYWATNE). Lokalne repo w `JOB SEARCH/`, branch `main`. Push przez SSH: `GIT_SSH_COMMAND="ssh -i ~/.ssh/id_ed25519" git push`. (Brak `gh`/tokenu na Macu — repo zakładał Michał ręcznie.)
+- `.gitignore` wyklucza: `.env` (klucz!), `app/.venv`, `app/data` (sqlite+pdf), `__pycache__`, `template/cv.html`/`cv.pdf`/`_render.html`, `Zrzut*.png`. `template/assets/*.png` (logotypy) SĄ w repo.
+- **Deploy na VPS nadal przez rsync** (`/opt/jobsearch/`), nie git pull — można później przełączyć na deploy z gita.
+
 ## Lokalizacja
 `/Users/michal/CLAUDE PROJECTS/JOB SEARCH/`
 - `specyfikacja_cv_automat.md` — zamknięta specyfikacja v1.0 (przeczytać na start).
