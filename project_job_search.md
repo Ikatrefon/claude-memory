@@ -9,6 +9,14 @@ metadata:
 
 # Projekt: JOB SEARCH (automat CV)
 
+## Praca nad jakością graficzną CV — strona 1 nagłówek (2026-06-28)
+Problem: generowane CV „rozjeżdżało się" (kolizje nazwisko/badge, tag na tekst) — bo nagłówek był układem płynnym (flex) zależnym od treści.
+- **Rozwiązanie: nagłówek strony 1 pozycjonowany ABSOLUTNIE w `pt`** = 1:1 z oryginałem (CSS pt == PDF pt na A4). Klasy `.p1-name1/.p1-name2/.p1-photo/.p1-badge/.p1-contact` + `.p1-body{margin-top:178pt}` (treść schodzi pod nagłówek). Współrzędne odczytane z oryginału przez PyMuPDF (`get_text('dict')` bbox, `get_image_info`, `get_drawings`). Nazwisko 75pt, x33, top 29/93pt; zdjęcie left427.7 top35.4 w130.8pt; badge left360 top46; kontakt left33 top182 14pt.
+- **Odkrycie:** w oryginalnym PDF imię/nazwisko + badge są ZWEKTORYZOWANE (krzywe, nie tekst) → oryginał sam nie był czytelny dla ATS w polu nazwiska. My robimy je TEKSTEM (ten sam wygląd + ATS czyta).
+- **Font:** oryginał = Arial Narrow Bold. msttcorefonts (VPS) NIE zawiera Arial Narrow, Liberation Sans Narrow trudno dostać. **Dołączyłem pliki `template/fonts/ArialNarrow.ttf` + `-Bold.ttf`** (z Maca) przez `@font-face` family „ArialN" → identycznie lokalnie i na VPS. UWAGA LICENCJA: Arial Narrow to font Microsoftu — OK do prywatnego użytku (CV Michała), ale przy komercji/multi-user PODMIENIĆ na otwarty metryczny odpowiednik (Liberation Sans Narrow) albo wykupić licencję.
+- Weryfikacja: render lokalny (node Playwright, /tmp/render_cv.mjs) → nakładka/side-by-side na oryginał (PyMuPDF), iteracja rozmiaru/pozycji. Nazwisko/zdjęcie/kontakt pasują; badge blisko (do dociągnięcia: dekoracyjny łuk wokół „15+").
+- **Dwa tory (ustalone w dyskusji):** wersja GRAFICZNA (ten szablon, dla człowieka — „rzut oka" rekrutera) vs wersja ATS-friendly (jedna kolumna, czysty tekst, bez zdjęcia/grafik, słowa kluczowe) — bo ozdobne layouty psują parsowanie w ATS. ATS-wariant generowalny z tego samego cv.json — DO ZROBIENIA. Strony 2-3 czekają na to samo traktowanie.
+
 ## Menedżer dokumentów kandydata (2026-06-28)
 W Ustawieniach sekcja „Dokumenty kandydata": bazowe CV (`cv.json`) = rdzeń szablonu (stałe), + dodatkowe dokumenty (PDF/TXT/MD) dodaj/usuń. Tekst dokumentów (`engine.extra_context()` z sidecarów `data/docs/<id>.txt`) dołączany do system-promptu OCENY i GENERACJI (więcej prawdziwego materiału, bez zmyślania) ORAZ do „zbioru prawdy" guardraila (tokeny dokumentów dodane do base_tok → uzasadnione dopiski nie flagowane). Tabela `dokumenty(id,created_at,orig,fname)`; pliki w `app/data/docs/` (wolumen). Routes: `POST /docs/upload` (UploadFile), `POST /docs/{id}/delete`. Ekstrakcja PDF przez **PyMuPDF** (dodane do requirements). Pełna podmiana bazowego CV (nowy layout) = osobny, większy temat (PDF→struktura→szablon) — NIE zrobione.
 - **GOTCHA rsync:** pliki app/ deployować do `/opt/jobsearch/app/` (z `/app/`!), nie do `/opt/jobsearch/` — inaczej Docker COPY bierze starą wersję. requirements.txt → do `/opt/jobsearch/`.
