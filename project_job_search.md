@@ -9,6 +9,10 @@ metadata:
 
 # Projekt: JOB SEARCH (automat CV)
 
+## Menedżer dokumentów kandydata (2026-06-28)
+W Ustawieniach sekcja „Dokumenty kandydata": bazowe CV (`cv.json`) = rdzeń szablonu (stałe), + dodatkowe dokumenty (PDF/TXT/MD) dodaj/usuń. Tekst dokumentów (`engine.extra_context()` z sidecarów `data/docs/<id>.txt`) dołączany do system-promptu OCENY i GENERACJI (więcej prawdziwego materiału, bez zmyślania) ORAZ do „zbioru prawdy" guardraila (tokeny dokumentów dodane do base_tok → uzasadnione dopiski nie flagowane). Tabela `dokumenty(id,created_at,orig,fname)`; pliki w `app/data/docs/` (wolumen). Routes: `POST /docs/upload` (UploadFile), `POST /docs/{id}/delete`. Ekstrakcja PDF przez **PyMuPDF** (dodane do requirements). Pełna podmiana bazowego CV (nowy layout) = osobny, większy temat (PDF→struktura→szablon) — NIE zrobione.
+- **GOTCHA rsync:** pliki app/ deployować do `/opt/jobsearch/app/` (z `/app/`!), nie do `/opt/jobsearch/` — inaczej Docker COPY bierze starą wersję. requirements.txt → do `/opt/jobsearch/`.
+
 ## Repo / git (2026-06-28)
 - **GitHub:** `git@github.com:Ikatrefon/job-search.git` (PRYWATNE). Lokalne repo w `JOB SEARCH/`, branch `main`. Push przez SSH: `GIT_SSH_COMMAND="ssh -i ~/.ssh/id_ed25519" git push`. (Brak `gh`/tokenu na Macu — repo zakładał Michał ręcznie.)
 - `.gitignore` wyklucza: `.env` (klucz!), `app/.venv`, `app/data` (sqlite+pdf), `__pycache__`, `template/cv.html`/`cv.pdf`/`_render.html`, `Zrzut*.png`. `template/assets/*.png` (logotypy) SĄ w repo.
