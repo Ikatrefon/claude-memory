@@ -50,7 +50,15 @@ metadata:
 - Kody: LINDT5XMAS / LINDT10XMAS / LINDT15XMAS / LINDT20XMAS
 - Wake Lock API (ekran nie gaśnie podczas gry)
 
-## Muzyka (zaktualizowane 2026-06-29 — Jingle Bells, cieplej, ciszej, od ekranu startowego)
+## Muzyka — TŁO = plik MP3 (aktualne, 2026-06-29 wieczór)
+**Tło muzyczne to teraz `ELEMENTY/music.mp3`** (192kbps, ~20s, `<audio id="bg-music" loop preload>` w HTML), NIE synth.
+- `startMusic()` = `bgMusic.currentTime=0; bgMusic.play()` — wołane w **`beginPlay()`** = dokładnie start rozgrywki (po countdownie). `stopMusic()` = `pause()` w `endGame()`. Głośność `bgMusic.volume=0.55`, loop.
+- **Mobile unlock:** `unlockBgMusic()` (wyciszone play→pause) wołane w `onPlayPressed()` (gest), żeby późniejszy `play()` w beginPlay zadziałał na iOS/Android.
+- **Wszystkie SFX bez zmian** (beep/playCatch/playMiss/playGameOver na `ctx.destination`).
+- Plik: oryginał był w `ELEMENTY/ELEMENTY 2/music.mp3` → skopiowany do `ELEMENTY/music.mp3`. Deploy: scp też `ELEMENTY/music.mp3` na VPS (nowy asset, nie tylko index.html!).
+- Syntezowana muzyka (Jingle Bells/sleigh/bass — `CAROL`, `playMelodyNote`, `sleighBell`, `bassNote`, `getMusicGain`) ZOSTAŁA w kodzie ale **nieużywana** (startMusic jej nie woła). Można usunąć przy sprzątaniu albo wrócić, gdyby MP3 odpadło.
+
+## (HISTORIA) Synth-muzyka — Jingle Bells, cieplej, ciszej (zastąpiona przez MP3 2026-06-29)
 **Melodia = „Jingle Bells" (parafraza)** w `const CAROL` (nazwa stała, treść podmieniona): C-dur, refren ×2 z zakończeniem G G F D C, pętla ~19,6 s, ~185 BPM. Format `[freq,ms]`, **`freq=0` = pauza** (obsłużone w `playMelodyNote`/`bassNote` — return). Web Audio, proceduralnie.
 - **Bus muzyczny** (`getMusicGain`): `musicGain(0.42 — ciszej)` → lowpass 6500 → dry(0.9) + **pogłos** (ConvolverNode, `makeImpulse(1.8s,2.6)`, wet 0.22) → destination. Pogłos+lowpass+sinusy = „mniej 8-bit", cieplej.
 - **Melodia** = addytywne **sinusy** (celesta/pozytywka): partiale ×1/×2/×3/×4, miękki atak 12ms + sub-oktawa. (Zrezygnowano z triangle/„ding" — było zbyt retro.)
