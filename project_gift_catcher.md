@@ -50,8 +50,12 @@ metadata:
 - Kody: LINDT5XMAS / LINDT10XMAS / LINDT15XMAS / LINDT20XMAS
 - Wake Lock API (ekran nie gaśnie podczas gry)
 
-## Muzyka
-Carol of the Bells — Web Audio API: triangle wave + sub-octave sine + shimmer fifth oscillator.
+## Muzyka (zaktualizowane 2026-06-29 — „bardziej świątecznie")
+Carol of the Bells, Web Audio API, teraz pełniejsza aranżacja przez wspólny `musicGain` (0.8):
+- melodia: triangle + **jasny „ding" oktawę wyżej (glockenspiel)** + sub-octave sine + połysk (oktawa+kwinta na dłuższych nutach);
+- **sleigh bells** — `sleighBell(accent)` = filtrowany szum (bandpass) + 3 metaliczne square partiale; stały puls `setInterval(188ms)` z akcentem co drugi (start/stop w `startMusic`/`stopMusic`, zmienna `sleighInterval`);
+- **bas** — `bassNote(freq/2)` na nutach `dur>=280ms` (świąteczne bujanie).
+SFX (catch/miss/gameover/countdown beep) zostają bezpośrednio na `ctx.destination` (przebijają się nad muzyką). Muzyka startuje z grą (po countdownie), nie na ekranie startowym. Opcje do ew. iteracji: lżejsze/mocniejsze dzwoneczki, inna melodia (Jingle Bells), muzyka też na ekranie startowym.
 
 ## Tło i dekoracje (stan 2026-06-03)
 - `ELEMENTY/background.png` — bitmapa 480×900px (PIL): gradient, drzewa, gwiazdy, bokeh
