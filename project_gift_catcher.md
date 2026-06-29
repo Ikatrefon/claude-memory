@@ -52,7 +52,7 @@ metadata:
 
 ## Muzyka — TŁO = plik MP3 (aktualne, 2026-06-29 wieczór)
 **Tło muzyczne to teraz `ELEMENTY/music.mp3`** (192kbps, ~20s, `<audio id="bg-music" loop preload>` w HTML), NIE synth.
-- `startMusic()` = `bgMusic.currentTime=0; bgMusic.play()` — wołane w **`beginPlay()`** = dokładnie start rozgrywki (po countdownie). `stopMusic()` = `pause()` w `endGame()`. Głośność `bgMusic.volume=0.55`, loop.
+- `startMusic()` = `bgMusic.currentTime=0; bgMusic.play()` — wołane w **`beginPlay()`** = dokładnie start rozgrywki (po countdownie). `stopMusic()` = `pause()` w `endGame()` → **ekran wyniku jest cichy** (stop następuje przed showResult). Głośność `bgMusic.volume=0.4` (przyciszone na życzenie), loop.
 - **Mobile unlock:** `unlockBgMusic()` (wyciszone play→pause) wołane w `onPlayPressed()` (gest), żeby późniejszy `play()` w beginPlay zadziałał na iOS/Android.
 - **Wszystkie SFX bez zmian** (beep/playCatch/playMiss/playGameOver na `ctx.destination`).
 - Plik: oryginał był w `ELEMENTY/ELEMENTY 2/music.mp3` → skopiowany do `ELEMENTY/music.mp3`. Deploy: scp też `ELEMENTY/music.mp3` na VPS (nowy asset, nie tylko index.html!).
