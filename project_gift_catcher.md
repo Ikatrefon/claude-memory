@@ -50,12 +50,14 @@ metadata:
 - Kody: LINDT5XMAS / LINDT10XMAS / LINDT15XMAS / LINDT20XMAS
 - Wake Lock API (ekran nie gaśnie podczas gry)
 
-## Muzyka (zaktualizowane 2026-06-29 — „bardziej świątecznie")
-Carol of the Bells, Web Audio API, teraz pełniejsza aranżacja przez wspólny `musicGain` (0.8):
-- melodia: triangle + **jasny „ding" oktawę wyżej (glockenspiel)** + sub-octave sine + połysk (oktawa+kwinta na dłuższych nutach);
-- **sleigh bells** — `sleighBell(accent)` = filtrowany szum (bandpass) + 3 metaliczne square partiale; stały puls `setInterval(188ms)` z akcentem co drugi (start/stop w `startMusic`/`stopMusic`, zmienna `sleighInterval`);
-- **bas** — `bassNote(freq/2)` na nutach `dur>=280ms` (świąteczne bujanie).
-SFX (catch/miss/gameover/countdown beep) zostają bezpośrednio na `ctx.destination` (przebijają się nad muzyką). Muzyka startuje z grą (po countdownie), nie na ekranie startowym. Opcje do ew. iteracji: lżejsze/mocniejsze dzwoneczki, inna melodia (Jingle Bells), muzyka też na ekranie startowym.
+## Muzyka (zaktualizowane 2026-06-29 — Jingle Bells, cieplej, ciszej, od ekranu startowego)
+**Melodia = „Jingle Bells" (parafraza)** w `const CAROL` (nazwa stała, treść podmieniona): C-dur, refren ×2 z zakończeniem G G F D C, pętla ~19,6 s, ~185 BPM. Format `[freq,ms]`, **`freq=0` = pauza** (obsłużone w `playMelodyNote`/`bassNote` — return). Web Audio, proceduralnie.
+- **Bus muzyczny** (`getMusicGain`): `musicGain(0.42 — ciszej)` → lowpass 6500 → dry(0.9) + **pogłos** (ConvolverNode, `makeImpulse(1.8s,2.6)`, wet 0.22) → destination. Pogłos+lowpass+sinusy = „mniej 8-bit", cieplej.
+- **Melodia** = addytywne **sinusy** (celesta/pozytywka): partiale ×1/×2/×3/×4, miękki atak 12ms + sub-oktawa. (Zrezygnowano z triangle/„ding" — było zbyt retro.)
+- **Sleigh bells** `sleighBell(accent)` = szum bandpass + **sinusowe** partiale (były square — usunięte); puls `setInterval(188ms)`, akcent co drugi, `sleighInterval`.
+- **Bas** `bassNote(freq/2)` na nutach `dur>=280ms`.
+- **Muzyka od EKRANU STARTOWEGO:** `kickMusic()` na pierwszym `pointerdown`/`touchstart` (mobile wymaga gestu) → `resume()` + `startMusic()` (flaga `_musicKicked`). `endGame` NIE woła już `stopMusic` → gra dalej przez całą sesję (start→gra→wynik).
+SFX (catch/miss/gameover/countdown) zostają na `ctx.destination` (przebijają się). Pokrętła do iteracji: głośność (`musicGain`), gęstość/siła dzwoneczków, ilość pogłosu (wet), tempo (ms w CAROL).
 
 ## Tło i dekoracje (stan 2026-06-03)
 - `ELEMENTY/background.png` — bitmapa 480×900px (PIL): gradient, drzewa, gwiazdy, bokeh
