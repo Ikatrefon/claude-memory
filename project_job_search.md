@@ -58,6 +58,12 @@ Zasada (potwierdzona): warstwa źródeł ODCIĘTA od silnika — każdy adapter 
 - **UI:** poczekalnia (index.html) — sekcja „Zaciągnij oferty z sieci" + przycisk „⬇ Pobierz oferty" + flash `fetched` + badge `zrodlo` przy wierszu (gdy ≠ manual). Ustawienia (settings.html) — sekcja „Źródła ofert": słowa kluczowe (po przecinku), limit (1-50), checkbox auto-ocena Haiku, + zwijane pola Adzuna (app_id/key/country/where). Zapis: `POST /settings/sources` → `db.set_config` klucze `src_keywords/src_limit/src_autoeval/adzuna_id/adzuna_key/adzuna_country/adzuna_where`.
 - Zweryfikowane na żywo: fetch→3 oferty z pełnym opisem, dedup (2. pobranie=0), badge OK. Testowe skasowane.
 - **Kontrola kosztów:** ocena masowa tylko Haiku; limit na pobranie; dedup. Opus tylko ręcznie.
+- **Adzuna PODŁĄCZONA i DZIAŁA (2026-07-02):** klucze w db config (`adzuna_id/key`), kraje wielokrotne po przecinku (`adzuna_country="pl, gb"` — pętla per kraj, Adzuna=per kraj). **KLUCZOWE nauki z tuningu:**
+  - **`what_phrase` (dokładna fraza), NIE `what`** (=wszystkie słowa, dużo śmieci). `sources.fetch_adzuna` używa what_phrase. Usunięty param `content-type` (dawał sporadyczne 502).
+  - **Round-robin** w `/sources/fetch`: każde (źródło/kraj/fraza) do osobnego „kubełka" → `zip_longest` przeplata → limit nie zjada całości przez pierwszy kraj (wcześniej PL wypełniał 20, GB nie wchodził).
+  - **Słowa kluczowe = tytuły ról**; „Design manager" ŁAPIE INŻYNIERYJNE ŚMIECI (projektant sieci/obwodów/substation) — odradzać. Dobry zestaw dla Michała: „Head of UX, UX Lead, UX Director, Head of Design, Head of Product Design, Design Director".
+  - Weryfikacja na żywo: 20 ofert PL+GB, auto-ocena Haiku posortowała trafnie (Head of UX Design 78, UX Lead 72; „Head of Design (Structural Steel)" słusznie 15).
+  - GOTCHA: BackgroundTasks (auto-ocena) giną przy restarcie kontenera (deploy w trakcie oceny) — nie krytyczne, ale świadomie.
 - **DO ZROBIENIA (Faza 2):** profile wyszukiwań (kilka zapytań/krajów), CRON (auto co dzień), więcej źródeł. **Adzuna** — Michał ma założyć darmowy klucz (developer.adzuna.com). **Gmail/LinkedIn ZAPARKOWANE** (wrócić): apka potrzebuje WŁASNEJ autoryzacji Gmaila (OAuth read-only lub IMAP+app password) — dostęp z czatu (konektor Claude) NIE przechodzi na apkę. LinkedIn maile = zajawki (tytuł/firma/link), pełny opis dopiero pod linkiem → Adzuna lepsza do pełnych opisów.
 
 ## Menedżer dokumentów kandydata (2026-06-28)
